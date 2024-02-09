@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up & Sign In</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+    form {
+      width: 350px; /* Increased width */
+      max-width: 80%; /* Limiting maximum width */
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px 40px; /* Added padding on the right and left sides */
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="email"] {
+      width: calc(100% - 20px); /* Adjusted width to account for padding */
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+    input[type="submit"] {
+      width: 50%; /* Adjusted width */
+      margin: 0 auto; /* Centering horizontally */
+      display: block; /* Ensuring it's displayed as a block element */
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin-top: 20px; /* Added margin to separate from other inputs */
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+    .error {
+      color: red;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+  
+  
+</head>
+<body>
+  <form id="signupForm">
+    <h2>Sign Up</h2>
+    <label for="username">Username:</label>
+    <input type="text" id="username" placeholder="Username" required>
+    <label for="password">Password:</label>
+    <input type="password" id="password" placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" title="Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 8 characters long" required>
+    <label for="mobile">Mobile No:</label>
+    <input type="tel" id="mobile" placeholder="Mobile No" pattern="[0-9]{10}" title="Mobile number must be 10 digits long" required>
+    <label for="email">Email:</label>
+    <input type="email" id="email" placeholder="Email" pattern="[a-zA-Z0-9._%+-]+@gmail\.com$" title="Email must be a valid Gmail address" required>
+    <input type="submit" value="Sign Up">
+  </form>
+
+  <form id="signinForm" style="display: none;">
+    <h2>Sign In</h2>
+    <label for="signinEmail">Email:</label>
+    <input type="email" id="signinEmail" placeholder="Email" required>
+    <label for="signinPassword">Password:</label>
+    <input type="password" id="signinPassword" placeholder="Password" required>
+    <input type="submit" value="Sign In">
+  </form>
+
+  <div id="userData" style="display: none;">
+    <h2>User Data</h2>
+    <table id="userTable">
+      <tr>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Mobile No</th>
+        <th>Email</th>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    // Check if user data exists in localStorage, if not, initialize an empty array
+    let userDataArray = JSON.parse(localStorage.getItem('userDataArray')) || [];
+  
+    document.getElementById('signupForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      let username = document.getElementById('username').value;
+      let password = document.getElementById('password').value;
+      let mobile = document.getElementById('mobile').value;
+      let email = document.getElementById('email').value;
+  
+      // Validation could be added here
+  
+      let userData = {
+        username: username,
+        password: password,
+        mobile: mobile,
+        email: email
+      };
+  
+      // Add new user data to the array
+      userDataArray.push(userData);
+  
+      // Update localStorage with the new array
+      localStorage.setItem('userDataArray', JSON.stringify(userDataArray));
+  
+      document.getElementById('signupForm').style.display = 'none';
+      document.getElementById('signinForm').style.display = 'block';
+    });
+  
+    document.getElementById('signinForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      let signinEmail = document.getElementById('signinEmail').value;
+      let signinPassword = document.getElementById('signinPassword').value;
+  
+      // Find user data by email
+      let userData = userDataArray.find(user => user.email === signinEmail && user.password === signinPassword);
+  
+      if (userData) {
+        renderAllUserData(userDataArray);
+      } else {
+        alert('Invalid email or password. Please try again.');
+      }
+    });
+  
+    function renderAllUserData(userDataArray) {
+      document.getElementById('signinForm').style.display = 'none';
+      document.getElementById('userData').style.display = 'block';
+  
+      let table = document.getElementById('userTable');
+  
+      // Clear existing table content
+      table.innerHTML = '';
+  
+      // Add table header
+      let headerRow = table.insertRow(0);
+      for (let key in userDataArray[0]) {
+        let th = document.createElement('th');
+        th.textContent = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize first letter
+        headerRow.appendChild(th);
+      }
+  
+      // Add table rows with user data
+      userDataArray.forEach(function(userData, index) {
+        let row = table.insertRow(index + 1);
+        for (let key in userData) {
+          let cell = row.insertCell();
+          cell.textContent = userData[key];
+        }
+      });
+    }
+  </script>
+  
+</body>
+</html>
+
+  
+
+
